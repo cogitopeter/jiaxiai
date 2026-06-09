@@ -976,3 +976,4 @@ if(first) first.classList.add('expanded');
 </body>
 </html>
 ```
+<!-- 嘉析AI · 高中生物 · 7 维题目分析器 · v1.0.0 -->
