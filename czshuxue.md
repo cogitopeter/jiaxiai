@@ -977,3 +977,4 @@ if(first) first.classList.add('expanded');
 </body>
 </html>
 ```
+<!-- 嘉析AI · 初中数学 · 7 维题目分析器 · v1.0.0 -->
