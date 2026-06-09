@@ -1,11 +1,11 @@
 ---
-name: gzshuxue
-description: "高中数学题目分析器。当用户发送数学题目（通常是拍照图片）时使用此skill。为每道题生成包含7个分析维度的白色打印友好HTML文件（解题思路、解题过程、知识点拆解、思维方式、易错点、变式题、难度定位），同时维护一个汇总索引页面用于学习诊断。触发词：'做这道题'、'分析这道题'、'这题怎么做'、发送数学题目图片。"
+name: xxaoshu
+description: "小学奥数题目分析器。当用户发送数学题目（通常是拍照图片）时使用此skill。为每道题生成包含7个分析维度的白色打印友好HTML文件（解题思路、解题过程、知识点拆解、思维方式、易错点、变式题、难度定位），同时维护一个汇总索引页面用于学习诊断。触发词：'做这道题'、'分析这道题'、'这题怎么做'、发送数学题目图片。"
 ---
 
-# 高中数学题目分析器
+# 小学奥数题目分析器
 
-为高中数学题目生成详细的7维分析HTML文件，并维护学习诊断索引。不区分教材版本——题目按通用高中数学知识体系归类，若不同版本对同一知识点有不同命名习惯，可在标签中并列收录。
+为小学奥数题目生成详细的7维分析HTML文件，并维护学习诊断索引。不区分教材版本——题目按通用小学奥数知识体系归类，若不同版本对同一知识点有不同命名习惯，可在标签中并列收录。
 
 ## 工作流程
 
@@ -13,17 +13,16 @@ description: "高中数学题目分析器。当用户发送数学题目（通常
 
 在做任何事之前，先判断输入是否为数学题目。
 
-**判断标准：** 题目的核心知识点属于数学学科（含初中/高中/竞赛数学）。
+**判断标准：** 题目的核心知识点属于数学学科（含小学数学内容）。
 
 **不是数学题的典型情况：**
-- 物理、化学、生物（哪怕含有数字运算）
-- 语文、英语、历史、地理、政治
+- 与数学学科无关的其他学科题目
 - 其他任何非数学学科
 
 **若判断为非数学题：** 输出以下提示后**立即终止**，不执行后续任何步骤，不生成任何文件：
 
-> 这道题不属于数学范畴，/gzshuxue 只处理数学题目。
-> 如果题目里有需要单独分析的数学计算部分，请把那部分单独描述后再发给我。
+> 这道题不属于数学范畴，/xxaoshu 只处理数学题目。
+> 如果题目里有需要单独分析的部分，请把那部分单独描述后再发给我。
 
 **若判断为数学题：** 继续执行后续步骤。
 
@@ -31,9 +30,9 @@ description: "高中数学题目分析器。当用户发送数学题目（通常
 
 ### Step 1: 初始化
 
-工作目录：`~/Desktop/gzshuxue/`
+工作目录：`~/Desktop/xxaoshu/`
 
-1. 检查 `images/` 子目录是否存在，不存在则 `mkdir -p ~/Desktop/gzshuxue/images`
+1. 检查 `images/` 子目录是否存在，不存在则 `mkdir -p ~/Desktop/xxaoshu/images`
 2. 检查 `problem.css` 是否存在，不存在则使用本文件中的 **CSS_TEMPLATE** 生成（此文件只需生成一次，所有题目共用）
 3. 检查 `index.html` 是否存在，不存在则使用本文件末尾的 **INDEX_TEMPLATE** 生成
 4. 统计已有 `problem_*.html` 文件数量，下一个编号 = 已有数量 + 1（三位数补零：001、002...）
@@ -41,7 +40,7 @@ description: "高中数学题目分析器。当用户发送数学题目（通常
 ### Step 2: 读取题目
 
 **图片输入（常见）：**
-1. 将用户提供的图片复制到 `~/Desktop/gzshuxue/images/problem_NNN.jpg`
+1. 将用户提供的图片复制到 `~/Desktop/xxaoshu/images/problem_NNN.jpg`
 2. 如果原图 >2MB，使用 `sips --resampleWidth 1200 <src> --out <dst>` 压缩
 3. 从图片中仔细读取题目内容，完整理解题意
 
@@ -71,12 +70,12 @@ description: "高中数学题目分析器。当用户发送数学题目（通常
 #### 维度三：知识点拆解
 - 格式：`大模块 > 中模块 > 具体知识点`
 - 列出所有涉及知识点，包括隐含的
-- 不区分教材版本，按通用高中数学知识体系分类；不同版本对同一知识点有不同名称时可并列收录
+- 不区分教材版本，按通用小学奥数知识体系分类；不同版本对同一知识点有不同名称时可并列收录
 
 **主模块分类（用于索引统计）：**
-集合与逻辑、函数、三角函数、数列、不等式、向量、立体几何、解析几何、概率统计、导数、复数、计数原理
+数与运算、数论、计数原理、几何图形、行程问题、逻辑推理、代数与方程
 
-**超纲题处理：** 若题目涉及高中课标以外的知识点（如微积分/极限、线性代数、大学概率论、全国联赛及以上竞赛内容），在维度三中注明所涉超纲知识点，`modules` 填写实际模块名，索引条目加 `overgrade: true`。超纲题正常生成分析页，但不计入学习诊断统计图表。
+**超纲题处理：** 若题目涉及小学数学课标以外的知识点（即初中及以上数学内容（如负数运算、一元一次方程、几何证明等）），在维度三中注明所涉超纲知识点，`modules` 填写实际模块名，索引条目加 `overgrade: true`。超纲题正常生成分析页，但不计入学习诊断统计图表。
 
 #### 维度四：思维方式
 - 逐步标注每个关键节点所用思维
@@ -93,22 +92,23 @@ description: "高中数学题目分析器。当用户发送数学题目（通常
 
 #### 维度七：难度定位
 - 等级：基础(1) / 中档(2) / 中高档(3) / 压轴(4)
-- 高考/模考定位、建议用时
+- 竞赛/模考定位、建议用时
 
 ### Step 4: 生成题目HTML文件
 
-参照 **PROBLEM_TEMPLATE** 的结构生成 `problem_NNN.html`，保存到 `~/Desktop/gzshuxue/`。
+参照 **PROBLEM_TEMPLATE** 的结构生成 `problem_NNN.html`，保存到 `~/Desktop/xxaoshu/`。
 
 **要求：**
 - 数学公式用 LaTeX，KaTeX 自动渲染
 - 七个section用HTML结构化，不堆纯文本
 - 每个section的div加 `id` 属性用于锚点跳转（思路/解法/知识点/思维/易错/变式/难度）
+- 白色简洁界面，适合打印
 - 样式由外部 `problem.css` 提供，HTML 中只需 `<link rel="stylesheet" href="problem.css">`，**不内联任何 CSS**
 - 如有图片，用 `<img src="images/problem_NNN.jpg">`
 
 ### Step 5: 更新索引
 
-读取 `~/Desktop/gzshuxue/index.html`，在 `var problems = [...]` 数组末尾、`];` 之前追加：
+读取 `~/Desktop/xxaoshu/index.html`，在 `var problems = [...]` 数组末尾、`];` 之前追加：
 
 ```javascript
 {
@@ -118,11 +118,11 @@ description: "高中数学题目分析器。当用户发送数学题目（通常
   title: '题目简短描述',
   difficulty: N,
   diffLabel: '中档',
-  modules: ['解析几何'],
-  moduleDetails: ['解析几何 > 椭圆 > 焦点弦长公式'],
-  thinking: ['数形结合', '设而不求'],
+  modules: ['数与运算'],
+  moduleDetails: ['数与运算 > ...'],
+  thinking: ['数形结合', '分类讨论'],
   source: '作业'
-  // 若为超纲题（大学数学/竞赛），加：overgrade: true
+  // 若为超纲题（初中/高中数学），加：overgrade: true
 }
 ```
 
@@ -192,8 +192,8 @@ description: "高中数学题目分析器。当用户发送数学题目（通常
 <div class="section" id="知识点">
   <h2 class="section-title st-2">三、知识点拆解</h2>
   <div class="knowledge-item">
-    <span class="module-tag">解析几何</span>
-    解析几何 <span class="arrow">&gt;</span> 椭圆 <span class="arrow">&gt;</span> 焦点弦长公式
+    <span class="module-tag">三角形</span>
+    三角形 <span class="arrow">&gt;</span> 全等三角形 <span class="arrow">&gt;</span> SAS判定
   </div>
 </div>
 
@@ -201,8 +201,8 @@ description: "高中数学题目分析器。当用户发送数学题目（通常
   <h2 class="section-title st-3">四、思维方式</h2>
   <div class="thinking-item">
     <div>
-      <div class="thinking-step">【设椭圆标准方程】</div>
-      <div class="thinking-why">将问题纳入标准框架，便于使用公式</div>
+      <div class="thinking-step">【设辅助线连接两点】</div>
+      <div class="thinking-why">将问题纳入全等三角形框架，便于使用判定定理</div>
     </div>
     <span class="thinking-method">化归转化</span>
   </div>
@@ -229,7 +229,7 @@ description: "高中数学题目分析器。当用户发送数学题目（通常
   <h2 class="section-title st-6">七、难度定位</h2>
   <div class="difficulty-box">
     <div class="diff-row"><span class="diff-label">难度等级</span><span class="diff-value">中档</span></div>
-    <div class="diff-row"><span class="diff-label">考试定位</span><span class="diff-value">高考选填第X题水平</span></div>
+    <div class="diff-row"><span class="diff-label">考试定位</span><span class="diff-value">竞赛压轴题 / 第X题水平</span></div>
     <div class="diff-row"><span class="diff-label">建议用时</span><span class="diff-value">5-8分钟</span></div>
     <div class="diff-row"><span class="diff-label">适合阶段</span><span class="diff-value">基础巩固后的提升训练</span></div>
   </div>
@@ -259,7 +259,7 @@ document.addEventListener("DOMContentLoaded",function(){
 
 ## CSS_TEMPLATE
 
-所有题目 HTML 共用的样式表。Step 1 检查 `~/Desktop/gzshuxue/problem.css` 不存在时写入，**只写一次**。
+所有题目 HTML 共用的样式表。Step 1 检查对应工作目录下 `problem.css` 不存在时写入，**只写一次**。
 
 ```css
 *{margin:0;padding:0;box-sizing:border-box}
@@ -356,7 +356,7 @@ body{font-family:-apple-system,'PingFang SC','Microsoft YaHei','Noto Sans SC',sa
 
 汇总索引页面。深色主题，视觉丰富，用于学习诊断，通常不打印。
 
-当 `~/Desktop/gzshuxue/index.html` 不存在时生成。`var problems = [];` 初始为空，每次分析题目后追加。
+当 `~/Desktop/xxaoshu/index.html` 不存在时生成。`var problems = [];` 初始为空，每次分析题目后追加。
 
 ```html
 <!DOCTYPE html>
@@ -364,7 +364,7 @@ body{font-family:-apple-system,'PingFang SC','Microsoft YaHei','Noto Sans SC',sa
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>高中数学 · 学习诊断</title>
+<title>小学奥数 · 学习诊断</title>
 <style>
 :root{--bg:#0f172a;--card:#1e293b;--text:#e2e8f0;--text2:#94a3b8;
   --blue:#38bdf8;--gold:#fbbf24;--pink:#f472b6;--green:#34d399;
@@ -548,7 +548,7 @@ body{font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;
     <line x1="0" y1="33" x2="29" y2="33" stroke="rgba(255,255,255,0.8)" stroke-width="2.5" stroke-linecap="round"/>
     <text x="165" y="50" font-family="'PingFang SC','Noto Sans SC','Microsoft YaHei',sans-serif" font-size="40" font-weight="900" fill="white" letter-spacing="6">嘉析</text>
   </svg>
-  <div style="font-size:15px;color:rgba(226,232,240,0.65);margin-top:10px;font-weight:500;letter-spacing:2px">高中数学 · 学习诊断</div>
+  <div style="font-size:15px;color:rgba(226,232,240,0.65);margin-top:10px;font-weight:500;letter-spacing:2px">小学奥数 · 学习诊断</div>
   <div class="sub">题目分析汇总 &middot; 知识模块覆盖 &middot; 薄弱环节诊断</div>
 </div>
 
@@ -630,15 +630,14 @@ body{font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;
   </div>
 </div>
 
-<div class="footer">高中数学 · 学习诊断 &middot; 由 /gzshuxue 自动维护<div style="margin-top:8px"><a href="http://www.he321.com" style="color:inherit;text-decoration:none">嘉析AI</a>官网：<a href="http://www.he321.com" style="color:inherit;text-decoration:underline">www.he321.com</a></div></div>
+<div class="footer">小学奥数 · 学习诊断 &middot; 由 /xxaoshu 自动维护<div style="margin-top:8px"><a href="http://www.he321.com" style="color:inherit;text-decoration:none">嘉析AI</a>官网：<a href="http://www.he321.com" style="color:inherit;text-decoration:underline">www.he321.com</a></div></div>
 
 <script>
 var problems = [];
 
-var moduleNames=['集合与逻辑','函数','三角函数','数列','不等式','向量','立体几何','解析几何','概率统计','导数','复数','计数原理'];
-var moduleColors={'集合与逻辑':'#38bdf8','函数':'#fbbf24','三角函数':'#f472b6','数列':'#34d399',
-  '不等式':'#a78bfa','向量':'#fb923c','立体几何':'#e879f9','解析几何':'#22d3ee',
-  '概率统计':'#f87171','导数':'#4ade80','复数':'#c084fc','计数原理':'#fcd34d'};
+var moduleNames=['数与运算','数论','计数原理','几何图形','行程问题','逻辑推理','代数与方程'];
+var moduleColors={'数与运算':'#38bdf8','数论':'#fbbf24','计数原理':'#f472b6','几何图形':'#34d399',
+  '行程问题':'#a78bfa','逻辑推理':'#fb923c','代数与方程':'#e879f9'};
 var diffLabels={1:'基础',2:'中档',3:'中高档',4:'压轴'};
 var diffColors={1:'#22c55e',2:'#eab308',3:'#f97316',4:'#ef4444'};
 

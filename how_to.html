@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>shuxue 技能库 · 操作备忘</title>
+<style>
+:root{--bg:#0f172a;--card:#1e293b;--card2:#263348;--text:#e2e8f0;--text2:#94a3b8;
+  --blue:#38bdf8;--green:#34d399;--gold:#fbbf24;--orange:#fb923c;--pink:#f472b6;
+  --purple:#a78bfa;--cyan:#22d3ee;--red:#f87171;--border:rgba(255,255,255,.07)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;
+  background:var(--bg);color:var(--text);line-height:1.7;font-size:14px}
+
+.header{padding:48px 40px 36px;background:linear-gradient(135deg,#0f172a,#1a2f50,#0f172a);
+  border-bottom:1px solid var(--border);text-align:center}
+.header h1{font-size:26px;font-weight:800;letter-spacing:.5px}
+.header h1 span{color:var(--blue)}
+.header .sub{color:var(--text2);font-size:12px;margin-top:8px}
+
+.container{max-width:900px;margin:0 auto;padding:40px 24px}
+
+.section{margin-bottom:48px}
+.section-title{font-size:15px;font-weight:700;padding:10px 16px;
+  background:var(--card);border-radius:10px 10px 0 0;
+  border-bottom:2px solid var(--blue);color:var(--blue);
+  display:flex;align-items:center;gap:8px}
+.section-body{background:var(--card);border-radius:0 0 10px 10px;
+  padding:20px 20px;border:1px solid var(--border);border-top:none}
+
+/* 目录树 */
+.tree{font-family:'SF Mono','Fira Code','Consolas',monospace;font-size:13px;
+  line-height:2;color:var(--text2)}
+.tree .dir{color:var(--gold);font-weight:600}
+.tree .md{color:var(--green)}
+.tree .zip{color:var(--cyan)}
+.tree .html{color:var(--blue)}
+.tree .img{color:var(--purple)}
+.tree .note{color:var(--text2);font-size:12px;margin-left:8px}
+
+/* 技能表格 */
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;padding:8px 12px;color:var(--text2);font-weight:600;
+  border-bottom:1px solid var(--border);font-size:12px}
+td{padding:9px 12px;border-bottom:1px solid rgba(255,255,255,.03);vertical-align:top}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.02)}
+.badge{display:inline-block;font-size:11px;padding:1px 8px;border-radius:8px;font-weight:600}
+.b-gz{background:rgba(251,191,36,.12);color:var(--gold)}
+.b-cz{background:rgba(52,211,153,.12);color:var(--green)}
+.b-xx{background:rgba(167,139,250,.12);color:var(--purple)}
+.b-gwy{background:rgba(248,113,113,.12);color:var(--red)}
+.cmd{font-family:'SF Mono',monospace;font-size:12px;
+  background:rgba(56,189,248,.08);color:var(--blue);
+  padding:2px 8px;border-radius:4px}
+.tag-ok{font-size:11px;color:var(--green)}
+
+/* 流程步骤 */
+.steps{counter-reset:step}
+.step{display:flex;gap:16px;margin-bottom:16px;align-items:flex-start}
+.step-num{flex-shrink:0;width:26px;height:26px;border-radius:50%;
+  background:var(--blue);color:#0f172a;font-weight:800;font-size:13px;
+  display:flex;align-items:center;justify-content:center}
+.step-body{flex:1;padding-top:3px}
+.step-title{font-weight:600;margin-bottom:2px}
+.step-desc{color:var(--text2);font-size:13px}
+code{font-family:'SF Mono','Fira Code',monospace;font-size:12px;
+  background:rgba(255,255,255,.07);padding:1px 6px;border-radius:4px;color:var(--cyan)}
+
+/* 命名规范 */
+.prefix-row{display:flex;gap:12px;margin-bottom:8px;align-items:center}
+.prefix{font-family:monospace;font-size:16px;font-weight:800;
+  min-width:48px;color:var(--gold)}
+.prefix-meaning{color:var(--text);margin-right:12px}
+.subjects{display:flex;gap:6px;flex-wrap:wrap}
+.subj{font-size:11px;padding:1px 8px;border-radius:6px;
+  background:rgba(255,255,255,.06);color:var(--text2)}
+
+/* 分发卡片 */
+.dist-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.dist-card{background:var(--card2);border-radius:8px;padding:16px 18px;
+  border:1px solid var(--border)}
+.dist-card .dc-title{font-weight:700;font-size:14px;margin-bottom:12px;
+  display:flex;align-items:center;gap:8px}
+.dist-card .dc-step{font-size:13px;color:var(--text2);margin-bottom:6px;
+  display:flex;gap:8px;align-items:flex-start}
+.dist-card .dc-step::before{content:attr(data-n);flex-shrink:0;
+  color:var(--text2);font-size:11px;margin-top:2px}
+
+/* 注意事项 */
+.notice{background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.2);
+  border-radius:8px;padding:14px 16px;margin-top:12px;font-size:13px}
+.notice strong{color:var(--gold)}
+
+/* www 说明 */
+.www-tree{font-family:'SF Mono',monospace;font-size:13px;line-height:2;
+  color:var(--text2)}
+
+.footer{text-align:center;padding:28px;color:var(--text2);font-size:11px;
+  border-top:1px solid var(--border);margin-top:24px}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>&#128218; shuxue 技能库 · <span>操作备忘</span></h1>
+  <div class="sub">~/Desktop/shuxue/ &middot; 自用流程记录</div>
+</div>
+
+<div class="container">
+
+<!-- 1. 目录结构 -->
+<div class="section">
+  <div class="section-title">&#128193; 目录结构 <code style="font-size:11px;background:rgba(255,255,255,.06);color:var(--text2)">~/Desktop/shuxue/</code></div>
+  <div class="section-body">
+    <div class="tree">
+<pre>shuxue/
+├── <span class="md">gzshuxue.md</span>        <span class="note">高中数学 skill 源文件</span>
+├── <span class="md">gzwuli.md</span>          <span class="note">高中物理 skill 源文件</span>
+├── <span class="md">gzhuaxue.md</span>        <span class="note">高中化学 skill 源文件</span>
+├── <span class="md">gzshengwu.md</span>       <span class="note">高中生物 skill 源文件</span>
+├── <span class="md">gzdili.md</span>          <span class="note">高中地理 skill 源文件</span>
+├── <span class="md">czshuxue.md</span>        <span class="note">初中数学 skill 源文件</span>
+├── <span class="md">czwuli.md</span>          <span class="note">初中物理 skill 源文件</span>
+├── <span class="md">czhuaxue.md</span>        <span class="note">初中化学 skill 源文件</span>
+├── <span class="md">xxaoshu.md</span>         <span class="note">小学奥数 skill 源文件</span>
+├── <span class="md">gwyxingce.md</span>       <span class="note">公务员行测 skill 源文件</span>
+├── <span class="html">README.md</span>          <span class="note">gzshuxue 这个 skill 本身的说明（不是本文档）</span>
+├── <span class="html">how_to.html</span>        <span class="note">本文档</span>
+├── <span class="html">index.html</span>         <span class="note">学习诊断索引页（由 /gzshuxue 自动维护）</span>
+├── <span class="dir">images/</span>            <span class="note">题目图片，由 skill 自动存入（problem_NNN.jpg）</span>
+├── <span class="html">problem_*.html</span>     <span class="note">各题分析页，由 skill 自动生成</span>
+├── <span class="dir">workbuddyzip/</span>      <span class="note">WorkBuddy 安装包，由 /skill-pack 生成</span>
+│   └── <span class="zip">*.zip</span>
+└── <span class="dir">www/</span>               <span class="note">网站宣传页（介绍和售卖技能用），见下方说明</span></pre>
+    </div>
+  </div>
+</div>
+
+<!-- 2. 已有 Skill -->
+<div class="section">
+  <div class="section-title">&#128218; 已有 Skill 列表</div>
+  <div class="section-body">
+    <table>
+      <thead>
+        <tr>
+          <th>文件名</th>
+          <th>学段</th>
+          <th>科目</th>
+          <th>Claude Code 命令</th>
+          <th>WorkBuddy zip</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><code>gzshuxue.md</code></td><td><span class="badge b-gz">高中</span></td><td>数学</td><td><code>/gzshuxue</code></td><td><span class="tag-ok">✓ gzshuxue.zip</span></td></tr>
+        <tr><td><code>gzwuli.md</code></td><td><span class="badge b-gz">高中</span></td><td>物理</td><td><code>/gzwuli</code></td><td><span class="tag-ok">✓ gzwuli.zip</span></td></tr>
+        <tr><td><code>gzhuaxue.md</code></td><td><span class="badge b-gz">高中</span></td><td>化学</td><td><code>/gzhuaxue</code></td><td><span class="tag-ok">✓ gzhuaxue.zip</span></td></tr>
+        <tr><td><code>gzshengwu.md</code></td><td><span class="badge b-gz">高中</span></td><td>生物</td><td><code>/gzshengwu</code></td><td><span class="tag-ok">✓ gzshengwu.zip</span></td></tr>
+        <tr><td><code>gzdili.md</code></td><td><span class="badge b-gz">高中</span></td><td>地理</td><td><code>/gzdili</code></td><td><span class="tag-ok">✓ gzdili.zip</span></td></tr>
+        <tr><td><code>czshuxue.md</code></td><td><span class="badge b-cz">初中</span></td><td>数学</td><td><code>/czshuxue</code></td><td><span class="tag-ok">✓ czshuxue.zip</span></td></tr>
+        <tr><td><code>czwuli.md</code></td><td><span class="badge b-cz">初中</span></td><td>物理</td><td><code>/czwuli</code></td><td><span class="tag-ok">✓ czwuli.zip</span></td></tr>
+        <tr><td><code>czhuaxue.md</code></td><td><span class="badge b-cz">初中</span></td><td>化学</td><td><code>/czhuaxue</code></td><td><span class="tag-ok">✓ czhuaxue.zip</span></td></tr>
+        <tr><td><code>xxaoshu.md</code></td><td><span class="badge b-xx">小学</span></td><td>奥数</td><td><code>/xxaoshu</code></td><td><span class="tag-ok">✓ xxaoshu.zip</span></td></tr>
+        <tr><td><code>gwyxingce.md</code></td><td><span class="badge b-gwy">公务员</span></td><td>行测</td><td><code>/gwyxingce</code></td><td><span class="tag-ok">✓ gwyxingce.zip</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 3. 命名规范 -->
+<div class="section">
+  <div class="section-title">&#127991; 命名规范</div>
+  <div class="section-body">
+    <div class="prefix-row">
+      <span class="prefix">gz</span>
+      <span class="prefix-meaning">高中（gāozhōng）</span>
+      <div class="subjects">
+        <span class="subj">shuxue 数学</span>
+        <span class="subj">wuli 物理</span>
+        <span class="subj">huaxue 化学</span>
+        <span class="subj">shengwu 生物</span>
+        <span class="subj">dili 地理</span>
+        <span class="subj">lishi 历史</span>
+        <span class="subj">yingyu 英语</span>
+      </div>
+    </div>
+    <div class="prefix-row">
+      <span class="prefix">cz</span>
+      <span class="prefix-meaning">初中（chūzhōng）</span>
+      <div class="subjects">
+        <span class="subj">shuxue 数学</span>
+        <span class="subj">wuli 物理</span>
+        <span class="subj">huaxue 化学</span>
+        <span class="subj">shengwu 生物</span>
+        <span class="subj">dili 地理</span>
+      </div>
+    </div>
+    <div class="prefix-row">
+      <span class="prefix" style="color:var(--red)">gwy</span>
+      <span class="prefix-meaning">公务员（gōngwùyuán）</span>
+      <div class="subjects">
+        <span class="subj">xingce 行测</span>
+        <span class="subj">shenlun 申论</span>
+      </div>
+    </div>
+    <div class="prefix-row">
+      <span class="prefix">xx</span>
+      <span class="prefix-meaning">小学（xiǎoxué）</span>
+      <div class="subjects">
+        <span class="subj">shuxue 数学</span>
+        <span class="subj">aoshu 奥数</span>
+        <span class="subj">yingyu 英语</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 4. 两种分发方式 -->
+<div class="section">
+  <div class="section-title">&#128228; 两种分发方式</div>
+  <div class="section-body">
+    <div class="dist-row">
+      <div class="dist-card">
+        <div class="dc-title" style="color:var(--blue)">&#9881; Claude Code 用户</div>
+        <div class="dc-step" data-n="1.">把 <code>skill名.md</code> 发给对方</div>
+        <div class="dc-step" data-n="2.">对方放入 <code>~/.claude/commands/</code></div>
+        <div class="dc-step" data-n="3.">重启 Claude Code</div>
+        <div class="dc-step" data-n="4.">用 <code>/skill名</code> + 题目图片即可</div>
+      </div>
+      <div class="dist-card">
+        <div class="dc-title" style="color:var(--cyan)">&#128230; WorkBuddy 用户</div>
+        <div class="dc-step" data-n="1.">把 <code>workbuddyzip/skill名.zip</code> 发给对方</div>
+        <div class="dc-step" data-n="2.">对方在 WorkBuddy 里安装 zip</div>
+        <div class="dc-step" data-n="3.">用 <code>/skill名</code> + 题目图片即可</div>
+        <div class="dc-step" data-n="—">zip 若过期见下方"更新 zip"流程</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 5. 新增 Skill 流程 -->
+<div class="section">
+  <div class="section-title">&#43; 新增 Skill 完整流程</div>
+  <div class="section-body">
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">在 <code>~/Desktop/shuxue/</code> 新建 <code>新skill名.md</code></div>
+          <div class="step-desc">参照现有 md 的格式，必须包含 <code>## PROBLEM_TEMPLATE</code> 和 <code>## INDEX_TEMPLATE</code> 两个 section，否则 skill-pack 会跳过这个文件。修改 frontmatter 的 <code>name</code> 和 <code>description</code>，以及工作目录路径（如果换目录）。</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">把 md 文件复制到 <code>~/.claude/commands/</code> <span style="font-size:11px;color:var(--red);font-weight:400">← 唯一需要手动做的步骤</span></div>
+          <div class="step-desc">这样 Claude Code 才能识别为 slash command。<code>~/Desktop/shuxue/</code> 里的是"源文件"，<code>~/.claude/commands/</code> 里的是"生效文件"，两份保持同步。skill-pack 管不到这一步。</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">打包 WorkBuddy zip</div>
+          <div class="step-desc">在 Claude Code 里确保工作目录是 <code>~/Desktop/shuxue/</code>，然后执行 <code>/skill-pack</code>。<strong style="color:var(--text)">全量处理</strong>——不判断新旧，把当前目录所有 .md（除 README.md）全部重打包，同名 zip 直接覆盖，新 skill 的 zip 一并生成。无需手动删旧文件。</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <div class="step-title">分发</div>
+          <div class="step-desc">Claude Code 用户发 <code>.md</code>，WorkBuddy 用户发 <code>workbuddyzip/skill名.zip</code>。</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <div class="step-title">（可选）更新 <code>www/</code> 宣传页</div>
+          <div class="step-desc">在 www 网站里补充新 skill 的介绍内容。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="notice">
+      <strong>注意1：</strong> <code>/skill-pack</code> 只处理当前目录的 .md 文件，<strong>运行时工作目录必须是 <code>~/Desktop/shuxue/</code></strong>。如果 Claude Code 的 cwd 不对，先 <code>cd ~/Desktop/shuxue</code> 再运行。
+    </div>
+    <div class="notice" style="margin-top:8px">
+      <strong>注意2：</strong> 如果删掉了某个 .md 文件，<code>/skill-pack</code> 不会自动清理对应的旧 zip——它只管"md → zip"，不管反向删除。需要手动去 <code>workbuddyzip/</code> 删除孤立的旧 zip。
+    </div>
+  </div>
+</div>
+
+<!-- 6. 修改已有 Skill 流程 -->
+<div class="section">
+  <div class="section-title">&#9998; 修改已有 Skill 后的更新步骤</div>
+  <div class="section-body">
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">修改 <code>~/Desktop/shuxue/skill名.md</code></div>
+          <div class="step-desc">这是源文件，在这里改。</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">同步到 <code>~/.claude/commands/skill名.md</code></div>
+          <div class="step-desc">Claude Code 读的是 commands/ 里的版本，要手动覆盖过去。</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">重跑 <code>/skill-pack</code> 更新 zip</div>
+          <div class="step-desc">WorkBuddy 用户重新下载新 zip 安装。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 7. www 说明 -->
+<div class="section">
+  <div class="section-title">&#127760; www 目录说明</div>
+  <div class="section-body">
+    <div class="www-tree" style="margin-bottom:14px">
+<pre>www/
+├── index.html          宣传主页（介绍所有 skill，对外售卖入口）
+├── docs/               效果截图（用于展示 skill 分析效果）
+│   ├── screenshot-index-list.png
+│   ├── screenshot-index-diag.png
+│   ├── screenshot-solution.png
+│   ├── screenshot-thinking.png
+│   └── screenshot-thought.png
+└── gzshuxue/           gzshuxue 的在线演示实例
+    ├── index.html
+    ├── problem_001.html
+    ├── problem.css
+    └── images/</pre>
+    </div>
+    <div style="font-size:13px;color:var(--text2)">
+      新增 skill 时，如需在宣传页展示，在 <code>www/</code> 里补对应 skill 的演示目录和截图即可。<code>www/</code> 内容与 skill 运行无关，不影响 Claude Code / WorkBuddy 使用。
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div class="footer">shuxue 技能库 · 操作备忘 &middot; 自用文档</div>
+
+</body>
+</html>

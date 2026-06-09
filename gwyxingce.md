@@ -1,39 +1,38 @@
 ---
-name: gzshuxue
-description: "高中数学题目分析器。当用户发送数学题目（通常是拍照图片）时使用此skill。为每道题生成包含7个分析维度的白色打印友好HTML文件（解题思路、解题过程、知识点拆解、思维方式、易错点、变式题、难度定位），同时维护一个汇总索引页面用于学习诊断。触发词：'做这道题'、'分析这道题'、'这题怎么做'、发送数学题目图片。"
+name: gwyxingce
+description: "公务员考试行政职业能力测验（行测）题目分析器。当用户发送行测题目（通常是拍照图片）时使用此skill。为每道题生成包含7个分析维度的白色打印友好HTML文件（解题思路、解题过程、知识点拆解、思维方式、易错点、变式题、难度定位），同时维护一个汇总索引页面用于备考诊断。触发词：'做这道题'、'分析这道题'、'这题怎么做'、发送行测题目图片。"
 ---
 
-# 高中数学题目分析器
+# 公务员行测题目分析器
 
-为高中数学题目生成详细的7维分析HTML文件，并维护学习诊断索引。不区分教材版本——题目按通用高中数学知识体系归类，若不同版本对同一知识点有不同命名习惯，可在标签中并列收录。
+为公务员考试行政职业能力测验（行测）题目生成详细的7维分析HTML文件，并维护备考诊断索引。不区分国考/省考/事业单位——按通用行测知识体系归类。
 
 ## 工作流程
 
 ### Step 0: 学科判断（前置检查）
 
-在做任何事之前，先判断输入是否为数学题目。
+在做任何事之前，先判断输入是否为行测题目。
 
-**判断标准：** 题目的核心知识点属于数学学科（含初中/高中/竞赛数学）。
+**判断标准：** 题目属于行测五大模块之一（言语理解、数量关系、判断推理、资料分析、常识判断）。
 
-**不是数学题的典型情况：**
-- 物理、化学、生物（哪怕含有数字运算）
-- 语文、英语、历史、地理、政治
-- 其他任何非数学学科
+**不是行测题的典型情况：**
+- 申论题目（主观题，需要写作）
+- 高中/初中学科题目
+- 其他非行测内容
 
-**若判断为非数学题：** 输出以下提示后**立即终止**，不执行后续任何步骤，不生成任何文件：
+**若判断为非行测题：** 输出以下提示后**立即终止**，不执行后续任何步骤，不生成任何文件：
 
-> 这道题不属于数学范畴，/gzshuxue 只处理数学题目。
-> 如果题目里有需要单独分析的数学计算部分，请把那部分单独描述后再发给我。
+> 这道题不属于行测范畴，/gwyxingce 只处理行测题目（言语理解、数量关系、判断推理、资料分析、常识判断）。
 
-**若判断为数学题：** 继续执行后续步骤。
+**若判断为行测题：** 继续执行后续步骤。
 
 ---
 
 ### Step 1: 初始化
 
-工作目录：`~/Desktop/gzshuxue/`
+工作目录：`~/Desktop/xingce/`
 
-1. 检查 `images/` 子目录是否存在，不存在则 `mkdir -p ~/Desktop/gzshuxue/images`
+1. 检查 `images/` 子目录是否存在，不存在则 `mkdir -p ~/Desktop/xingce/images`
 2. 检查 `problem.css` 是否存在，不存在则使用本文件中的 **CSS_TEMPLATE** 生成（此文件只需生成一次，所有题目共用）
 3. 检查 `index.html` 是否存在，不存在则使用本文件末尾的 **INDEX_TEMPLATE** 生成
 4. 统计已有 `problem_*.html` 文件数量，下一个编号 = 已有数量 + 1（三位数补零：001、002...）
@@ -41,9 +40,9 @@ description: "高中数学题目分析器。当用户发送数学题目（通常
 ### Step 2: 读取题目
 
 **图片输入（常见）：**
-1. 将用户提供的图片复制到 `~/Desktop/gzshuxue/images/problem_NNN.jpg`
+1. 将用户提供的图片复制到 `~/Desktop/xingce/images/problem_NNN.jpg`
 2. 如果原图 >2MB，使用 `sips --resampleWidth 1200 <src> --out <dst>` 压缩
-3. 从图片中仔细读取题目内容，完整理解题意
+3. 从图片中仔细读取题目内容，完整理解题干和ABCD选项
 
 **文字输入：**
 - 跳过图片处理，HTML中省略图片区域
@@ -54,53 +53,63 @@ description: "高中数学题目分析器。当用户发送数学题目（通常
 - 放在题目图片之后、正式解法之前
 - 展示做题前的思考过程：不是标准答案，而是"怎么想到的"
 - 关键要素：
-  - 审题：提取了哪些关键条件，第一反应是什么
-  - 尝试：最初想用什么方法，走到哪一步发现困难或不够优雅
-  - 突破：怎么想到了能解决问题的方法，关键洞察是什么
-  - 路径选择：如果有多条路，为什么选了这条
-- 控制篇幅：3-5个思考节点，每个2-4句话
-- 语气：像一个有经验的同学在旁边说"我是这么想的"，不是教科书式叙述
-- 目标：激发学生的思维模式，而非给出标准路径
+  - 审题：识别题型，提取关键条件，第一反应用什么方法
+  - 方向：排除法/代入法/逻辑推演/速算，选择哪条路
+  - 突破：找到关键突破口的思维节点
+  - 陷阱：命题人设了什么干扰项，怎么识别
+- 控制篇幅：3-4个思考节点，每个2-3句话
+- 语气：像一个刷题老手说"我是这么想的"，不是教科书式叙述
 - HTML使用时间轴样式（`.thought-flow` + `.thought-step`），关键洞察节点加 `.ts-insight` 类
 
 #### 维度二：解题过程
-- 至少提供2种解法（仅1种时说明原因）
-- 每种解法完整步骤，公式用 LaTeX（`$...$` 行内，`$$...$$` 独立行）
-- 标注解法特点：通法/巧解/计算量对比
+- 核心是**选项分析**：逐个说明每个选项为什么正确或错误
+- 至少提供2种解法（如有）：通法 + 秒杀技巧
+- 选项用 `.option-analysis` + `.option-item.correct/wrong` 样式展示
+- 标注解法特点：通法/排除法/代入法/速算法/秒杀
+- 常识判断题：展示正确答案的知识点依据，其他选项说明排除理由
+- 数量关系/资料分析：公式用 LaTeX（`$...$` 行内，`$$...$$` 独立行）
 
 #### 维度三：知识点拆解
-- 格式：`大模块 > 中模块 > 具体知识点`
+- 格式：`大模块 > 中模块 > 具体题型/知识点`
 - 列出所有涉及知识点，包括隐含的
-- 不区分教材版本，按通用高中数学知识体系分类；不同版本对同一知识点有不同名称时可并列收录
+- 不区分国考/省考版本，按通用行测知识体系分类
 
 **主模块分类（用于索引统计）：**
-集合与逻辑、函数、三角函数、数列、不等式、向量、立体几何、解析几何、概率统计、导数、复数、计数原理
+言语理解、数量关系、判断推理、资料分析、常识判断
 
-**超纲题处理：** 若题目涉及高中课标以外的知识点（如微积分/极限、线性代数、大学概率论、全国联赛及以上竞赛内容），在维度三中注明所涉超纲知识点，`modules` 填写实际模块名，索引条目加 `overgrade: true`。超纲题正常生成分析页，但不计入学习诊断统计图表。
+**各模块常见二级分类：**
+- 言语理解：逻辑填空、片段阅读、语句排序、句子填空
+- 数量关系：行程问题、工程问题、排列组合、概率、数字规律、统计
+- 判断推理：图形推理、类比推理、定义判断、逻辑判断（演绎/削弱加强/归纳）
+- 资料分析：增长率、增长量、比重、倍数、平均数、综合计算
+- 常识判断：政治法律、经济、历史文化、地理科技
 
 #### 维度四：思维方式
 - 逐步标注每个关键节点所用思维
 - 格式：`【步骤描述】→ 思维名称：为什么在这用`
-- 常见：数形结合、分类讨论、化归转化、函数与方程、整体思想、构造法、反证法、特殊值法、逆向思维、设而不求、参数法、等价转换、递推思想、对称性、极端原理
+- 行测常见：排除法、代入法、特殊值法、比例思维、逆向思维、逻辑推演、关键词定位、语境分析、速算估算、图形规律、类比推理、反驳法
 
 #### 维度五：易错点与陷阱
 - 2-4个常见错误
 - 每个：❌ 错误做法 → ✅ 正确做法 → 原因分析
+- 重点标注命题人的干扰项设计逻辑
 
 #### 维度六：变式题方向
 - 2-3个变式
-- 每个：改什么条件 → 变成什么题 → 核心区别
+- 每个：改什么条件/题型 → 变成什么题 → 核心区别
 
 #### 维度七：难度定位
-- 等级：基础(1) / 中档(2) / 中高档(3) / 压轴(4)
-- 高考/模考定位、建议用时
+- 等级：容易(1) / 中等(2) / 较难(3) / 高难(4)
+- 预计正确率（全体考生水平）
+- 建议用时（行测单题参考时间）
+- 考试策略：容易题秒过；中等题正常作答；较难题超时立刻猜跳；高难题直接跳过不死磕
 
 ### Step 4: 生成题目HTML文件
 
-参照 **PROBLEM_TEMPLATE** 的结构生成 `problem_NNN.html`，保存到 `~/Desktop/gzshuxue/`。
+参照 **PROBLEM_TEMPLATE** 的结构生成 `problem_NNN.html`，保存到 `~/Desktop/xingce/`。
 
 **要求：**
-- 数学公式用 LaTeX，KaTeX 自动渲染
+- 数学公式用 LaTeX，KaTeX 自动渲染（数量关系、资料分析用得上）
 - 七个section用HTML结构化，不堆纯文本
 - 每个section的div加 `id` 属性用于锚点跳转（思路/解法/知识点/思维/易错/变式/难度）
 - 样式由外部 `problem.css` 提供，HTML 中只需 `<link rel="stylesheet" href="problem.css">`，**不内联任何 CSS**
@@ -108,7 +117,7 @@ description: "高中数学题目分析器。当用户发送数学题目（通常
 
 ### Step 5: 更新索引
 
-读取 `~/Desktop/gzshuxue/index.html`，在 `var problems = [...]` 数组末尾、`];` 之前追加：
+读取 `~/Desktop/xingce/index.html`，在 `var problems = [...]` 数组末尾、`];` 之前追加：
 
 ```javascript
 {
@@ -117,12 +126,11 @@ description: "高中数学题目分析器。当用户发送数学题目（通常
   file: 'problem_NNN.html',
   title: '题目简短描述',
   difficulty: N,
-  diffLabel: '中档',
-  modules: ['解析几何'],
-  moduleDetails: ['解析几何 > 椭圆 > 焦点弦长公式'],
-  thinking: ['数形结合', '设而不求'],
-  source: '作业'
-  // 若为超纲题（大学数学/竞赛），加：overgrade: true
+  diffLabel: '中等',
+  modules: ['判断推理'],
+  moduleDetails: ['判断推理 > 逻辑判断 > 削弱论证'],
+  thinking: ['排除法', '逻辑推演'],
+  source: '2023国考真题'
 }
 ```
 
@@ -167,16 +175,16 @@ description: "高中数学题目分析器。当用户发送数学题目（通常
   <h2 class="section-title st-0">一、解题思路</h2>
   <div class="thought-flow">
     <div class="thought-step">
-      <div class="thought-label" style="color:#2563eb">审题 — 第一反应</div>
-      <div class="thought-text">提取关键条件，初步判断题型和方向</div>
+      <div class="thought-label" style="color:#2563eb">审题 — 识别题型</div>
+      <div class="thought-text">判断属于哪个模块哪种题型，提取关键条件</div>
     </div>
     <div class="thought-step">
-      <div class="thought-label" style="color:#f59e0b">尝试 — 走过的弯路</div>
-      <div class="thought-text">最初想用什么方法，遇到了什么困难</div>
+      <div class="thought-label" style="color:#f59e0b">方向 — 选择方法</div>
+      <div class="thought-text">第一反应用什么方法，为什么选这条路</div>
     </div>
     <div class="thought-step ts-insight">
       <div class="thought-label" style="color:#10b981">突破 — 关键洞察</div>
-      <div class="thought-text">怎么想到了正确的方法，核心转折点是什么</div>
+      <div class="thought-text">找到突破口的核心思维，命题人设了什么陷阱</div>
     </div>
   </div>
 </div>
@@ -185,15 +193,45 @@ description: "高中数学题目分析器。当用户发送数学题目（通常
   <h2 class="section-title st-1">二、解题过程</h2>
   <div class="method">
     <div class="method-title">解法一 <span class="method-tag">通法</span></div>
-    <div class="step">步骤内容，公式用 $...$ 或 $$...$$ </div>
+    <div class="step">推理过程说明（数量关系/资料分析可用 $...$ 公式）</div>
+    <div class="option-analysis">
+      <div class="option-item correct">
+        <span class="option-label">A</span>
+        <div class="option-content">
+          <div class="option-text">选项内容</div>
+          <div class="option-reason">正确原因分析</div>
+        </div>
+      </div>
+      <div class="option-item wrong">
+        <span class="option-label">B</span>
+        <div class="option-content">
+          <div class="option-text">选项内容</div>
+          <div class="option-reason">排除原因分析</div>
+        </div>
+      </div>
+      <div class="option-item wrong">
+        <span class="option-label">C</span>
+        <div class="option-content">
+          <div class="option-text">选项内容</div>
+          <div class="option-reason">排除原因分析</div>
+        </div>
+      </div>
+      <div class="option-item wrong">
+        <span class="option-label">D</span>
+        <div class="option-content">
+          <div class="option-text">选项内容</div>
+          <div class="option-reason">排除原因分析</div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
 <div class="section" id="知识点">
   <h2 class="section-title st-2">三、知识点拆解</h2>
   <div class="knowledge-item">
-    <span class="module-tag">解析几何</span>
-    解析几何 <span class="arrow">&gt;</span> 椭圆 <span class="arrow">&gt;</span> 焦点弦长公式
+    <span class="module-tag">判断推理</span>
+    判断推理 <span class="arrow">&gt;</span> 逻辑判断 <span class="arrow">&gt;</span> 削弱论证
   </div>
 </div>
 
@@ -201,10 +239,10 @@ description: "高中数学题目分析器。当用户发送数学题目（通常
   <h2 class="section-title st-3">四、思维方式</h2>
   <div class="thinking-item">
     <div>
-      <div class="thinking-step">【设椭圆标准方程】</div>
-      <div class="thinking-why">将问题纳入标准框架，便于使用公式</div>
+      <div class="thinking-step">【识别论证结构】</div>
+      <div class="thinking-why">明确前提和结论，才能找到削弱点</div>
     </div>
-    <span class="thinking-method">化归转化</span>
+    <span class="thinking-method">逻辑推演</span>
   </div>
 </div>
 
@@ -213,7 +251,7 @@ description: "高中数学题目分析器。当用户发送数学题目（通常
   <div class="pitfall">
     <div class="pitfall-wrong">错误做法描述</div>
     <div class="pitfall-right">正确做法描述</div>
-    <div class="pitfall-why">原因分析</div>
+    <div class="pitfall-why">原因分析（含命题人干扰项设计逻辑）</div>
   </div>
 </div>
 
@@ -228,10 +266,10 @@ description: "高中数学题目分析器。当用户发送数学题目（通常
 <div class="section" id="难度">
   <h2 class="section-title st-6">七、难度定位</h2>
   <div class="difficulty-box">
-    <div class="diff-row"><span class="diff-label">难度等级</span><span class="diff-value">中档</span></div>
-    <div class="diff-row"><span class="diff-label">考试定位</span><span class="diff-value">高考选填第X题水平</span></div>
-    <div class="diff-row"><span class="diff-label">建议用时</span><span class="diff-value">5-8分钟</span></div>
-    <div class="diff-row"><span class="diff-label">适合阶段</span><span class="diff-value">基础巩固后的提升训练</span></div>
+    <div class="diff-row"><span class="diff-label">难度等级</span><span class="diff-value">中等</span></div>
+    <div class="diff-row"><span class="diff-label">预计正确率</span><span class="diff-value">约55%</span></div>
+    <div class="diff-row"><span class="diff-label">建议用时</span><span class="diff-value">60-90秒</span></div>
+    <div class="diff-row"><span class="diff-label">考试策略</span><span class="diff-value">正常作答，超时立刻猜答案跳过</span></div>
   </div>
 </div>
 
@@ -259,7 +297,7 @@ document.addEventListener("DOMContentLoaded",function(){
 
 ## CSS_TEMPLATE
 
-所有题目 HTML 共用的样式表。Step 1 检查 `~/Desktop/gzshuxue/problem.css` 不存在时写入，**只写一次**。
+所有题目 HTML 共用的样式表。Step 1 检查 `~/Desktop/xingce/problem.css` 不存在时写入，**只写一次**。
 
 ```css
 *{margin:0;padding:0;box-sizing:border-box}
@@ -292,6 +330,7 @@ body{font-family:-apple-system,'PingFang SC','Microsoft YaHei','Noto Sans SC',sa
 .st-5{border-left:4px solid #ea580c}
 .st-6{border-left:4px solid #16a34a}
 .st-0{border-left:4px solid #d97706}
+
 .thought-flow{position:relative}
 .thought-step{position:relative;padding:10px 0 10px 28px;margin-bottom:4px;
   border-left:2px solid #e5e7eb;margin-left:6px}
@@ -306,7 +345,19 @@ body{font-family:-apple-system,'PingFang SC','Microsoft YaHei','Noto Sans SC',sa
 .method-title{font-size:15px;font-weight:700;color:#2563eb;margin-bottom:10px}
 .method-tag{display:inline-block;font-size:11px;padding:1px 8px;border-radius:4px;
   background:#eff6ff;color:#2563eb;margin-left:8px;font-weight:400}
-.step{margin-bottom:6px;padding-left:4px}
+.step{margin-bottom:10px;padding-left:4px;font-size:14px;color:#374151}
+
+.option-analysis{margin:8px 0 0}
+.option-item{display:flex;gap:10px;align-items:flex-start;padding:10px 14px;
+  margin-bottom:7px;border-radius:6px;font-size:14px;line-height:1.7}
+.option-item.correct{background:#f0fdf4;border:1px solid #bbf7d0}
+.option-item.wrong{background:#fef2f2;border:1px solid #fee2e2}
+.option-label{font-weight:800;min-width:22px;font-size:15px;padding-top:1px}
+.option-item.correct .option-label{color:#16a34a}
+.option-item.wrong .option-label{color:#dc2626}
+.option-content{flex:1}
+.option-text{margin-bottom:3px;font-weight:500}
+.option-reason{font-size:12px;color:#6b7280;line-height:1.6}
 
 .knowledge-item{padding:8px 12px;margin-bottom:6px;border-left:3px solid #e5e7eb;
   margin-left:8px;font-size:14px;background:#fafafa;border-radius:0 4px 4px 0}
@@ -354,9 +405,9 @@ body{font-family:-apple-system,'PingFang SC','Microsoft YaHei','Noto Sans SC',sa
 
 ## INDEX_TEMPLATE
 
-汇总索引页面。深色主题，视觉丰富，用于学习诊断，通常不打印。
+汇总索引页面。深色主题，视觉丰富，用于备考诊断，通常不打印。
 
-当 `~/Desktop/gzshuxue/index.html` 不存在时生成。`var problems = [];` 初始为空，每次分析题目后追加。
+当 `~/Desktop/xingce/index.html` 不存在时生成。`var problems = [];` 初始为空，每次分析题目后追加。
 
 ```html
 <!DOCTYPE html>
@@ -364,7 +415,7 @@ body{font-family:-apple-system,'PingFang SC','Microsoft YaHei','Noto Sans SC',sa
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>高中数学 · 学习诊断</title>
+<title>行测备考 · 学习诊断</title>
 <style>
 :root{--bg:#0f172a;--card:#1e293b;--text:#e2e8f0;--text2:#94a3b8;
   --blue:#38bdf8;--gold:#fbbf24;--pink:#f472b6;--green:#34d399;
@@ -455,7 +506,7 @@ body{font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;
 
 .cat-stat-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
 .cat-stat-row .cs-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
-.cat-stat-row .cs-name{font-size:13px;width:64px}
+.cat-stat-row .cs-name{font-size:13px;width:72px}
 .cat-stat-row .cs-bar-bg{flex:1;height:8px;border-radius:4px;background:rgba(255,255,255,.06);overflow:hidden}
 .cat-stat-row .cs-bar{height:100%;border-radius:4px;transition:width .5s ease}
 .cat-stat-row .cs-count{font-size:12px;color:var(--text2);min-width:28px;text-align:right}
@@ -548,14 +599,14 @@ body{font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;
     <line x1="0" y1="33" x2="29" y2="33" stroke="rgba(255,255,255,0.8)" stroke-width="2.5" stroke-linecap="round"/>
     <text x="165" y="50" font-family="'PingFang SC','Noto Sans SC','Microsoft YaHei',sans-serif" font-size="40" font-weight="900" fill="white" letter-spacing="6">嘉析</text>
   </svg>
-  <div style="font-size:15px;color:rgba(226,232,240,0.65);margin-top:10px;font-weight:500;letter-spacing:2px">高中数学 · 学习诊断</div>
-  <div class="sub">题目分析汇总 &middot; 知识模块覆盖 &middot; 薄弱环节诊断</div>
+  <div style="font-size:15px;color:rgba(226,232,240,0.65);margin-top:10px;font-weight:500;letter-spacing:2px">行测备考 · 学习诊断</div>
+  <div class="sub">题目分析汇总 &middot; 模块覆盖 &middot; 考试策略诊断</div>
 </div>
 
 <div class="tab-bar">
   <div class="tab on" onclick="switchView('list',this)">&#128197; 题目列表</div>
   <div class="tab" onclick="switchView('module',this)">&#128218; 知识模块</div>
-  <div class="tab" onclick="switchView('diag',this)">&#128202; 学习诊断</div>
+  <div class="tab" onclick="switchView('diag',this)">&#128202; 备考诊断</div>
 </div>
 
 <div class="container">
@@ -577,7 +628,7 @@ body{font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;
   <div class="insight-row" id="insight-row"></div>
   <div class="chart-row">
     <div class="chart-card">
-      <div class="chart-title">&#128171; 知识模块雷达</div>
+      <div class="chart-title">&#128171; 模块覆盖雷达</div>
       <div class="chart-subtitle">各模块练习量 — 形状越饱满覆盖越均衡</div>
       <div class="radar-wrap" id="radar-chart"></div>
     </div>
@@ -601,7 +652,7 @@ body{font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;
   </div>
   <div class="chart-row">
     <div class="chart-card full">
-      <div class="chart-title">&#128293; 学习热力图</div>
+      <div class="chart-title">&#128293; 备考热力图</div>
       <div class="chart-subtitle">每个格子代表一天 — 颜色越深当天练习越多</div>
       <div class="heatmap-wrap" id="heatmap-chart"></div>
       <div class="hm-legend">
@@ -613,7 +664,7 @@ body{font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;
         <div class="hm-legend-cell" style="background:rgba(56,189,248,.95)"></div>
         <span>多</span>
       </div>
-      <div class="hm-tip">坚持每天练习，让热力图亮起来</div>
+      <div class="hm-tip">坚持每天刷题，让热力图亮起来</div>
     </div>
   </div>
 </div>
@@ -630,16 +681,15 @@ body{font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;
   </div>
 </div>
 
-<div class="footer">高中数学 · 学习诊断 &middot; 由 /gzshuxue 自动维护<div style="margin-top:8px"><a href="http://www.he321.com" style="color:inherit;text-decoration:none">嘉析AI</a>官网：<a href="http://www.he321.com" style="color:inherit;text-decoration:underline">www.he321.com</a></div></div>
+<div class="footer">行测备考 · 学习诊断 &middot; 由 /gwyxingce 自动维护<div style="margin-top:8px"><a href="http://www.he321.com" style="color:inherit;text-decoration:none">嘉析AI</a>官网：<a href="http://www.he321.com" style="color:inherit;text-decoration:underline">www.he321.com</a></div></div>
 
 <script>
 var problems = [];
 
-var moduleNames=['集合与逻辑','函数','三角函数','数列','不等式','向量','立体几何','解析几何','概率统计','导数','复数','计数原理'];
-var moduleColors={'集合与逻辑':'#38bdf8','函数':'#fbbf24','三角函数':'#f472b6','数列':'#34d399',
-  '不等式':'#a78bfa','向量':'#fb923c','立体几何':'#e879f9','解析几何':'#22d3ee',
-  '概率统计':'#f87171','导数':'#4ade80','复数':'#c084fc','计数原理':'#fcd34d'};
-var diffLabels={1:'基础',2:'中档',3:'中高档',4:'压轴'};
+var moduleNames=['言语理解','数量关系','判断推理','资料分析','常识判断'];
+var moduleColors={'言语理解':'#38bdf8','数量关系':'#fbbf24','判断推理':'#f472b6',
+  '资料分析':'#34d399','常识判断':'#a78bfa'};
+var diffLabels={1:'容易',2:'中等',3:'较难',4:'高难'};
 var diffColors={1:'#22c55e',2:'#eab308',3:'#f97316',4:'#ef4444'};
 
 var moduleCounts={},thinkingCounts={},diffCounts={1:0,2:0,3:0,4:0},allThinking=[];
@@ -648,7 +698,6 @@ function computeData(){
   moduleCounts={};thinkingCounts={};diffCounts={1:0,2:0,3:0,4:0};allThinking=[];
   moduleNames.forEach(function(m){moduleCounts[m]=0});
   problems.forEach(function(p){
-    if(p.overgrade) return;
     p.modules.forEach(function(m){moduleCounts[m]=(moduleCounts[m]||0)+1});
     p.thinking.forEach(function(t){
       thinkingCounts[t]=(thinkingCounts[t]||0)+1;
@@ -663,7 +712,7 @@ function render(){
   var coveredModules=0,weakModules=0;
   moduleNames.forEach(function(m){
     if(moduleCounts[m]>0) coveredModules++;
-    if(moduleCounts[m]<3) weakModules++;
+    if(moduleCounts[m]<5) weakModules++;
   });
   document.getElementById('st-total').textContent=problems.length;
   document.getElementById('st-modules').textContent=coveredModules+'/'+moduleNames.length;
@@ -684,7 +733,6 @@ function renderListView(){
     html+='<div class="p-date">'+p.date+' &middot; '+p.source+'</div></div>';
     html+='</div><div class="right">';
     html+='<span class="p-diff pd-'+p.difficulty+'">'+p.diffLabel+'</span>';
-    if(p.overgrade) html+='<span class="p-diff" style="background:rgba(148,163,184,.1);color:#94a3b8;margin-left:4px">超纲</span>';
     html+='<div class="p-modules">';
     p.modules.forEach(function(m){
       html+='<span class="p-module-tag" style="color:'+(moduleColors[m]||'#94a3b8')+'">'+m+'</span>';
@@ -708,7 +756,7 @@ function renderListView(){
     html+='</div></div>';
     html+='</div></div></div>';
   });
-  document.getElementById('view-list').innerHTML=html||'<div class="empty-state">暂无题目，发送数学题目开始分析</div>';
+  document.getElementById('view-list').innerHTML=html||'<div class="empty-state">暂无题目，发送行测题目开始分析</div>';
 }
 
 function renderModuleView(){
@@ -773,7 +821,7 @@ function renderInsights(){
   html+='<div class="ins-card"><div class="ins-val" style="color:'+(moduleColors[topModule]||'var(--blue)')+'">'+
     (topModule||'-')+'</div><div class="ins-label">练习最多模块</div></div>';
   html+='<div class="ins-card"><div class="ins-val" style="color:var(--gold)">'+avgDiff+'</div><div class="ins-label">平均难度 (1-4)</div></div>';
-  html+='<div class="ins-card"><div class="ins-val" style="color:var(--green)">'+span+'</div><div class="ins-label">学习跨度 (天)</div></div>';
+  html+='<div class="ins-card"><div class="ins-val" style="color:var(--green)">'+span+'</div><div class="ins-label">备考跨度 (天)</div></div>';
   html+='<div class="ins-card"><div class="ins-val" style="color:var(--blue)">'+allThinking.length+'</div><div class="ins-label">思维方式种类</div></div>';
   document.getElementById('insight-row').innerHTML=html;
 }
@@ -844,8 +892,8 @@ function renderWeakness(){
     var c=moduleCounts[m]||0;
     var status,cls;
     if(c===0){status='未涉及';cls='ws-none';}
-    else if(c<=2){status='需加强';cls='ws-weak';}
-    else if(c<=5){status='初步掌握';cls='ws-ok';}
+    else if(c<=5){status='需加强';cls='ws-weak';}
+    else if(c<=15){status='初步掌握';cls='ws-ok';}
     else{status='较熟练';cls='ws-good';}
     var col=moduleColors[m]||'#94a3b8';
     html+='<li class="weakness-item">';
