@@ -288,7 +288,7 @@ document.addEventListener("DOMContentLoaded",function(){
   });
 });
 </script>
-<div style="text-align:center;padding:16px;color:#9ca3af;font-size:12px;border-top:1px solid #e5e7eb;margin-top:24px"><a href="http://www.he321.com" style="color:inherit;text-decoration:none">嘉析AI</a>官网：<a href="http://www.he321.com" style="color:inherit;text-decoration:underline">www.he321.com</a></div>
+<div style="text-align:center;padding:16px;color:#9ca3af;font-size:12px;border-top:1px solid #e5e7eb;margin-top:24px"><a href="http://www.he321.com/xingce" style="color:inherit;text-decoration:none">嘉析AI</a>官网：<a href="http://www.he321.com/xingce" style="color:inherit;text-decoration:underline">www.he321.com/xingce</a></div>
 </body>
 </html>
 ```
@@ -681,7 +681,7 @@ body{font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;
   </div>
 </div>
 
-<div class="footer">行测备考 · 学习诊断 &middot; 由 /gwyxingce 自动维护<div style="margin-top:8px"><a href="http://www.he321.com" style="color:inherit;text-decoration:none">嘉析AI</a>官网：<a href="http://www.he321.com" style="color:inherit;text-decoration:underline">www.he321.com</a></div></div>
+<div class="footer">行测备考 · 学习诊断 &middot; 由 /gwyxingce 自动维护<div style="margin-top:8px"><a href="http://www.he321.com/xingce" style="color:inherit;text-decoration:none">嘉析AI</a>官网：<a href="http://www.he321.com/xingce" style="color:inherit;text-decoration:underline">www.he321.com/xingce</a></div></div>
 
 <script>
 var problems = [];
