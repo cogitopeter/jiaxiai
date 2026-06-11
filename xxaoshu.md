@@ -30,9 +30,9 @@ description: "小学奥数题目分析器。当用户发送数学题目（通常
 
 ### Step 1: 初始化
 
-工作目录：`~/Desktop/xxaoshu/`
+工作目录：`~/Desktop/jiaxiai/xxaoshu/`
 
-1. 检查 `images/` 子目录是否存在，不存在则 `mkdir -p ~/Desktop/xxaoshu/images`
+1. 检查 `images/` 子目录是否存在，不存在则 `mkdir -p ~/Desktop/jiaxiai/xxaoshu/images`
 2. 检查 `problem.css` 是否存在，不存在则使用本文件中的 **CSS_TEMPLATE** 生成（此文件只需生成一次，所有题目共用）
 3. 检查 `index.html` 是否存在，不存在则使用本文件末尾的 **INDEX_TEMPLATE** 生成
 4. 统计已有 `problem_*.html` 文件数量，下一个编号 = 已有数量 + 1（三位数补零：001、002...）
@@ -40,7 +40,7 @@ description: "小学奥数题目分析器。当用户发送数学题目（通常
 ### Step 2: 读取题目
 
 **图片输入（常见）：**
-1. 将用户提供的图片复制到 `~/Desktop/xxaoshu/images/problem_NNN.jpg`
+1. 将用户提供的图片复制到 `~/Desktop/jiaxiai/xxaoshu/images/problem_NNN.jpg`
 2. 如果原图 >2MB，使用 `sips --resampleWidth 1200 <src> --out <dst>` 压缩
 3. 从图片中仔细读取题目内容，完整理解题意
 
@@ -96,7 +96,7 @@ description: "小学奥数题目分析器。当用户发送数学题目（通常
 
 ### Step 4: 生成题目HTML文件
 
-参照 **PROBLEM_TEMPLATE** 的结构生成 `problem_NNN.html`，保存到 `~/Desktop/xxaoshu/`。
+参照 **PROBLEM_TEMPLATE** 的结构生成 `problem_NNN.html`，保存到 `~/Desktop/jiaxiai/xxaoshu/`。
 
 **要求：**
 - 数学公式用 LaTeX，KaTeX 自动渲染
@@ -108,7 +108,7 @@ description: "小学奥数题目分析器。当用户发送数学题目（通常
 
 ### Step 5: 更新索引
 
-读取 `~/Desktop/xxaoshu/index.html`，在 `var problems = [...]` 数组末尾、`];` 之前追加：
+读取 `~/Desktop/jiaxiai/xxaoshu/index.html`，在 `var problems = [...]` 数组末尾、`];` 之前追加：
 
 ```javascript
 {
@@ -356,7 +356,7 @@ body{font-family:-apple-system,'PingFang SC','Microsoft YaHei','Noto Sans SC',sa
 
 汇总索引页面。深色主题，视觉丰富，用于学习诊断，通常不打印。
 
-当 `~/Desktop/xxaoshu/index.html` 不存在时生成。`var problems = [];` 初始为空，每次分析题目后追加。
+当 `~/Desktop/jiaxiai/xxaoshu/index.html` 不存在时生成。`var problems = [];` 初始为空，每次分析题目后追加。
 
 ```html
 <!DOCTYPE html>
